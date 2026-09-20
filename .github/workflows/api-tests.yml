@@ -1,0 +1,26 @@
+name: Проверка API-тестов
+
+on:
+  push:
+    branches:
+      - api-tests
+  workflow_dispatch:
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Получить код
+        uses: actions/checkout@v4
+
+      - name: Настроить Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Установить зависимости
+        run: pip install -r requirements.txt
+
+      - name: Запустить тесты
+        run: pytest tests -v --alluredir=allure_results
