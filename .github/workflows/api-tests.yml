@@ -7,20 +7,46 @@ on:
   workflow_dispatch:
 
 jobs:
-  tests:
+  create-courier:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Получить код
-        uses: actions/checkout@v4
-
-      - name: Настроить Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Создание курьера
+        run: pytest tests/test_create_courier.py -v
 
-      - name: Установить зависимости
-        run: pip install -r requirements.txt
+  login-courier:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Авторизация курьера
+        run: pytest tests/test_login_courier.py -v
 
-      - name: Запустить тесты
-        run: pytest tests -v --alluredir=allure_results
+  create-order:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Создание заказа
+        run: pytest tests/test_create_order.py -v
+
+  orders-list:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - name: Список заказов
+        run: pytest tests/test_orders_list.py -v
