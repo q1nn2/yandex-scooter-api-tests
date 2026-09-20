@@ -9,25 +9,26 @@ on:
 jobs:
   tests:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        test_file:
+          - test_create_courier.py
+          - test_login_courier.py
+          - test_create_order.py
+          - test_orders_list.py
+          - test_delete_courier.py
+          - test_accept_order.py
+          - test_get_order_by_track.py
 
     steps:
       - name: Получить код
         uses: actions/checkout@v4
-
       - name: Настроить Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-
       - name: Установить зависимости
         run: pip install -r requirements.txt
-
-      - name: Запустить все тесты
-        run: pytest tests -v --alluredir=allure_results
-
-      - name: Сохранить результаты Allure
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: allure-results
-          path: allure_results
+      - name: Запустить тесты
+        run: pytest tests/${{ matrix.test_file }} -v --alluredir=allure_results
