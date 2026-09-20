@@ -2,7 +2,8 @@ import random
 import string
 import requests
 
-from urls import CREATE_COURIER, LOGIN_COURIER
+from data import ORDER_DATA
+from urls import CREATE_COURIER, LOGIN_COURIER, ORDERS
 
 
 def generate_random_string(length):
@@ -44,6 +45,24 @@ def get_courier_id(login, password):
     return response.json()["id"]
 
 
-def delete_courier(login, password):
-    courier_id = get_courier_id(login, password)
+def delete_courier_by_id(courier_id):
     return requests.delete(f'{CREATE_COURIER}/{courier_id}')
+
+
+def delete_courier(login, password):
+    return delete_courier_by_id(get_courier_id(login, password))
+
+
+def create_order():
+    response = requests.post(ORDERS, json=ORDER_DATA.copy())
+    if response.status_code != 201:
+        raise RuntimeError("Не удалось создать тестовый заказ")
+    return response.json()["track"]
+
+
+def get_order_by_track(track):
+    return requests.get(f'{ORDERS}/track', params={"t": track})
+
+
+def get_order_id(track):
+    return get_order_by_track(track).json()["order"]["id"]
