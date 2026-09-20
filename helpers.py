@@ -3,7 +3,7 @@ import string
 import requests
 
 from data import ORDER_DATA
-from urls import CREATE_COURIER, LOGIN_COURIER, ORDERS, CANCEL_ORDER, TRACK_ORDER
+from urls import CREATE_COURIER, LOGIN_COURIER, ORDERS, CANCEL_ORDER, TRACK_ORDER, FINISH_ORDER
 
 
 def generate_random_string(length):
@@ -69,3 +69,7 @@ def get_order_by_track(track):
 
 def get_order_id(track):
     return get_order_by_track(track).json()["order"]["id"]
+
+
+def finish_order(order_id):
+    return requests.put(f'{FINISH_ORDER}/{order_id}')
