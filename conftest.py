@@ -1,6 +1,8 @@
 import pytest
+import requests
 
 from helpers import create_courier, delete_courier, get_courier_id, create_order, get_order_id
+from urls import ORDERS
 
 
 @pytest.fixture
@@ -34,7 +36,11 @@ def courier_with_id():
 @pytest.fixture
 def order():
     track = create_order()
-    return {
+    order_data = {
         "track": track,
         "id": get_order_id(track)
     }
+
+    yield order_data
+
+    requests.put(f'{ORDERS}/cancel', params={"track": track})
