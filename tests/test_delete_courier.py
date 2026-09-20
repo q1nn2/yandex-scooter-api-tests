@@ -1,7 +1,6 @@
 import allure
 import requests
 
-from helpers import generate_random_string
 from urls import CREATE_COURIER
 
 
@@ -9,8 +8,8 @@ from urls import CREATE_COURIER
 class TestDeleteCourier:
 
     @allure.title("Курьера можно удалить")
-    def test_delete_courier_success(self, courier_with_id):
-        response = requests.delete(f'{CREATE_COURIER}/{courier_with_id["id"]}')
+    def test_delete_courier_success(self, courier):
+        response = requests.delete(f'{CREATE_COURIER}/{courier["id"]}')
 
         assert response.status_code == 200
         assert response.json() == {"ok": True}
@@ -24,8 +23,7 @@ class TestDeleteCourier:
 
     @allure.title("Несуществующего курьера удалить нельзя")
     def test_delete_nonexistent_courier_error(self):
-        nonexistent_id = 999999999999
-        response = requests.delete(f'{CREATE_COURIER}/{nonexistent_id}')
+        response = requests.delete(f'{CREATE_COURIER}/999999999999')
 
         assert response.status_code == 404
         assert "message" in response.json()
