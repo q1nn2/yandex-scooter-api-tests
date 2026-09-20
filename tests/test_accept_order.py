@@ -1,6 +1,7 @@
 import allure
 import requests
 
+from helpers import finish_order
 from urls import ACCEPT_ORDER
 
 
@@ -14,8 +15,12 @@ class TestAcceptOrder:
             params={"courierId": courier["id"]}
         )
 
-        assert response.status_code == 200
-        assert response.json() == {"ok": True}
+        try:
+            assert response.status_code == 200
+            assert response.json() == {"ok": True}
+        finally:
+            if response.status_code == 200:
+                finish_order(order["id"])
 
     @allure.title("Без id курьера заказ принять нельзя")
     def test_accept_order_without_courier_id_error(self, order):
