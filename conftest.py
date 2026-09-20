@@ -43,4 +43,7 @@ def order():
 
     yield order_data
 
-    requests.put(f'{ORDERS}/cancel', params={"track": track})
+    try:
+        requests.put(f'{ORDERS}/cancel', params={"track": track}, timeout=5)
+    except requests.RequestException:
+        pass
