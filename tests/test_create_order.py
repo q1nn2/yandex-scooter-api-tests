@@ -3,6 +3,7 @@ import pytest
 import requests
 
 from data import ORDER_COLORS, ORDER_DATA
+from helpers import cancel_order
 from urls import ORDERS
 
 
@@ -19,6 +20,10 @@ class TestCreateOrder:
 
         response = requests.post(ORDERS, json=payload)
 
-        assert response.status_code == 201
-        assert "track" in response.json()
-        assert isinstance(response.json()["track"], int)
+        try:
+            assert response.status_code == 201
+            assert "track" in response.json()
+            assert isinstance(response.json()["track"], int)
+        finally:
+            if response.status_code == 201:
+                cancel_order(response.json()["track"])
