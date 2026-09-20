@@ -7,62 +7,27 @@ on:
   workflow_dispatch:
 
 jobs:
-  courier-success:
+  tests:
     runs-on: ubuntu-latest
-    steps: &steps
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - run: pytest tests/test_create_courier.py -v -k "test_create_courier_success"
 
-  courier-duplicate:
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - run: pytest tests/test_create_courier.py -v -k "test_create_duplicate_courier_error"
+      - name: Получить код
+        uses: actions/checkout@v4
 
-  courier-required:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Настроить Python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - run: pytest tests/test_create_courier.py -v -k "test_create_courier_without_required_field_error"
 
-  login-courier:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - run: pytest tests/test_login_courier.py -v
+      - name: Установить зависимости
+        run: pip install -r requirements.txt
 
-  create-order:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - run: pytest tests/test_create_order.py -v
+      - name: Запустить все тесты
+        run: pytest tests -v --alluredir=allure_results
 
-  orders-list:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Сохранить результаты Allure
+        if: always()
+        uses: actions/upload-artifact@v4
         with:
-          python-version: '3.12'
-      - run: pip install -r requirements.txt
-      - run: pytest tests/test_orders_list.py -v
+          name: allure-results
+          path: allure_results
