@@ -1,4 +1,4 @@
-name: Проверка API-тестов
+name: Диагностика API-тестов
 
 on:
   push:
@@ -15,11 +15,20 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - name: Запустить тесты
-        run: pytest tests -v --tb=short --alluredir=allure_results
-      - name: Сохранить результаты Allure
-        if: always()
+      - name: Запустить тесты и сохранить полный результат
+        shell: bash
+        run: |
+          set +e
+          pytest tests -vv -rA --tb=long --showlocals --durations=0 --alluredir=allure_results > pytest-output.txt 2>&1
+          code=$?
+          cat pytest-output.txt
+          echo "$code" > pytest-exit-code.txt
+          exit 0
+      - name: Сохранить диагностику
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results
-          path: allure_results
+          name: pytest-diagnostics
+          path: |
+            pytest-output.txt
+            pytest-exit-code.txt
+            allure_results
