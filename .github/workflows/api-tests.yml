@@ -22,13 +22,16 @@ jobs:
           - test_get_order_by_track.py
 
     steps:
-      - name: Получить код
-        uses: actions/checkout@v4
-      - name: Настроить Python
-        uses: actions/setup-python@v5
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Установить зависимости
-        run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt
       - name: Запустить тесты
-        run: pytest tests/${{ matrix.test_file }} -v --alluredir=allure_results
+        run: pytest tests/${{ matrix.test_file }} -vv -rA --tb=short --alluredir=allure_results | tee pytest-output.txt
+      - name: Сохранить вывод pytest
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-${{ matrix.test_file }}
+          path: pytest-output.txt
