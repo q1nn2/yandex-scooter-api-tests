@@ -1,4 +1,4 @@
-name: Диагностика API
+name: Проверка API-тестов
 
 on:
   push:
@@ -7,33 +7,19 @@ on:
   workflow_dispatch:
 
 jobs:
-  courier:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: pip install requests
-      - name: Проверить создание курьера
-        run: |
-          python - <<'PY'
-          import json, random, string, requests
-          login = ''.join(random.choice(string.ascii_lowercase) for _ in range(10))
-          payload = {"login": login, "password": "testpass", "firstName": "testname"}
-          r = requests.post("https://qa-scooter.praktikum-services.ru/api/v1/courier", data=payload)
-          result = {
-              "request": payload,
-              "status_code": r.status_code,
-              "content_type": r.headers.get("content-type"),
-              "response": r.text
-          }
-          print(json.dumps(result, ensure_ascii=False))
-          with open("courier-response.json", "w", encoding="utf-8") as f:
-              json.dump(result, f, ensure_ascii=False, indent=2)
-          PY
-      - name: Сохранить фактический ответ
+      - run: pip install -r requirements.txt
+      - name: Запустить тесты
+        run: pytest tests -v --tb=short --alluredir=allure_results
+      - name: Сохранить результаты Allure
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: courier-response
-          path: courier-response.json
+          name: allure-results
+          path: allure_results
