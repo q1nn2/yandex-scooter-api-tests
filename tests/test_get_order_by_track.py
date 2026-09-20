@@ -20,11 +20,11 @@ class TestGetOrderByTrack:
         response = requests.get(TRACK_ORDER)
 
         assert response.status_code == 400
-        assert "message" in response.json()
+        assert response.json()["message"] == "Недостаточно данных для поиска"
 
     @allure.title("Несуществующий номер заказа возвращает ошибку")
     def test_get_order_with_nonexistent_track_error(self):
-        response = requests.get(TRACK_ORDER, params={"t": 999999999999})
+        response = requests.get(TRACK_ORDER, params={"t": 99999999})
 
         assert response.status_code == 404
-        assert "message" in response.json()
+        assert response.json()["message"] == "Заказ не найден"
