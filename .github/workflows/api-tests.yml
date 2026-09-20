@@ -7,7 +7,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  create-courier:
+  courier-success:
+    runs-on: ubuntu-latest
+    steps: &steps
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: pytest tests/test_create_courier.py -v -k "test_create_courier_success"
+
+  courier-duplicate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,8 +25,17 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - name: Создание курьера
-        run: pytest tests/test_create_courier.py -v
+      - run: pytest tests/test_create_courier.py -v -k "test_create_duplicate_courier_error"
+
+  courier-required:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: pytest tests/test_create_courier.py -v -k "test_create_courier_without_required_field_error"
 
   login-courier:
     runs-on: ubuntu-latest
@@ -26,8 +45,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - name: Авторизация курьера
-        run: pytest tests/test_login_courier.py -v
+      - run: pytest tests/test_login_courier.py -v
 
   create-order:
     runs-on: ubuntu-latest
@@ -37,8 +55,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - name: Создание заказа
-        run: pytest tests/test_create_order.py -v
+      - run: pytest tests/test_create_order.py -v
 
   orders-list:
     runs-on: ubuntu-latest
@@ -48,5 +65,4 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r requirements.txt
-      - name: Список заказов
-        run: pytest tests/test_orders_list.py -v
+      - run: pytest tests/test_orders_list.py -v
