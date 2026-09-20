@@ -1,4 +1,5 @@
 import allure
+import pytest
 import requests
 
 from helpers import generate_random_string
@@ -20,20 +21,29 @@ class TestLoginCourier:
         assert isinstance(response.json()["id"], int)
 
     @allure.title("Без обязательного поля авторизация не выполняется")
-    def test_login_without_required_field_error(self, courier):
-        response = requests.post(LOGIN_COURIER, data={
-            "login": courier["login"]
-        })
+    @pytest.mark.parametrize("missing_field", ["login", "password"])
+    def test_login_without_required_field_error(self, courier, missing_field):
+        payload = {
+            "login": courier["login"],
+            "password": courier["password"]
+        }
+        payload.pop(missing_field)
+
+        response = requests.post(LOGIN_COURIER, data=payload)
 
         assert response.status_code == 400
         assert response.json()["message"] == "Недостаточно данных для входа"
 
-    @allure.title("С неверным паролем авторизация не выполняется")
-    def test_login_with_wrong_password_error(self, courier):
-        response = requests.post(LOGIN_COURIER, data={
+    @allure.title("С неверным логином или паролем авторизация не выполняется")
+    @pytest.mark.parametrize("wrong_field", ["login", "password"])
+    def test_login_with_wrong_credentials_error(self, courier, wrong_field):
+        payload = {
             "login": courier["login"],
-            "password": generate_random_string(10)
-        })
+            "password": courier["password"]
+        }
+        payload[wrong_field] = generate_random_string(20)
+
+        response = requests.post(LOGIN_COURIER, data=payload)
 
         assert response.status_code == 404
         assert response.json()["message"] == "Учетная запись не найдена"
