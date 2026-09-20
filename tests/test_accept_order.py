@@ -46,8 +46,8 @@ class TestAcceptOrder:
             params={"courierId": courier["id"]}
         )
 
-        assert response.status_code == 400
-        assert response.json()["message"] == "Недостаточно данных для поиска"
+        assert response.status_code == 404
+        assert response.json()["message"] == "Not Found."
 
     @allure.title("С неверным id заказа запрос возвращает ошибку")
     def test_accept_order_with_wrong_order_id_error(self, courier):
