@@ -38,7 +38,7 @@ class TestCreateCourier:
         response = requests.post(CREATE_COURIER, data=payload)
 
         assert response.status_code == 409
-        assert response.json()["message"] == "Этот логин уже используется"
+        assert response.json()["message"] == "Этот логин уже используется. Попробуйте другой."
 
     @allure.title("Без обязательного поля курьер не создаётся")
     @pytest.mark.parametrize("missing_field", ["login", "password"])
