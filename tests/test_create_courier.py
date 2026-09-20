@@ -1,4 +1,5 @@
 import allure
+import pytest
 import requests
 
 from helpers import generate_random_string, get_courier_id
@@ -34,11 +35,14 @@ class TestCreateCourier:
         assert response.json()["message"] == "Этот логин уже используется"
 
     @allure.title("Без обязательного поля курьер не создаётся")
-    def test_create_courier_without_required_field_error(self):
+    @pytest.mark.parametrize("missing_field", ["login", "password"])
+    def test_create_courier_without_required_field_error(self, missing_field):
         payload = {
+            "login": generate_random_string(10),
             "password": generate_random_string(10),
             "firstName": generate_random_string(10)
         }
+        payload.pop(missing_field)
 
         response = requests.post(CREATE_COURIER, data=payload)
 
