@@ -2,7 +2,7 @@ import allure
 import pytest
 import requests
 
-from helpers import generate_random_string, get_courier_id
+from helpers import generate_random_string, get_courier_id, delete_courier_by_id
 from urls import CREATE_COURIER
 
 
@@ -25,11 +25,17 @@ class TestCreateCourier:
         finally:
             if response.status_code == 201:
                 courier_id = get_courier_id(payload["login"], payload["password"])
-                requests.delete(f'{CREATE_COURIER}/{courier_id}')
+                delete_courier_by_id(courier_id)
 
     @allure.title("Нельзя создать двух одинаковых курьеров")
     def test_create_duplicate_courier_error(self, courier):
-        response = requests.post(CREATE_COURIER, data=courier)
+        payload = {
+            "login": courier["login"],
+            "password": courier["password"],
+            "firstName": courier["firstName"]
+        }
+
+        response = requests.post(CREATE_COURIER, data=payload)
 
         assert response.status_code == 409
         assert response.json()["message"] == "Этот логин уже используется"
