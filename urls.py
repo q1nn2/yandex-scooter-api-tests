@@ -6,3 +6,5 @@ ORDERS = f'{BASE_URL}/v1/orders'
 CANCEL_ORDER = f'{ORDERS}/cancel'
 ACCEPT_ORDER = f'{ORDERS}/accept'
 TRACK_ORDER = f'{ORDERS}/track'
+
+FINISH_ORDER = f'{ORDERS}/finish'
