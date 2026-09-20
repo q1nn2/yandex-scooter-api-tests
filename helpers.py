@@ -3,7 +3,7 @@ import string
 import requests
 
 from data import ORDER_DATA
-from urls import CREATE_COURIER, LOGIN_COURIER, ORDERS
+from urls import CREATE_COURIER, LOGIN_COURIER, ORDERS, CANCEL_ORDER
 
 
 def generate_random_string(length):
@@ -12,6 +12,7 @@ def generate_random_string(length):
 
 
 def register_new_courier_and_return_login_password():
+    login_pass = []
     login = generate_random_string(10)
     password = generate_random_string(10)
     first_name = generate_random_string(10)
@@ -25,9 +26,11 @@ def register_new_courier_and_return_login_password():
     response = requests.post(CREATE_COURIER, data=payload)
 
     if response.status_code == 201:
-        return [login, password, first_name]
+        login_pass.append(login)
+        login_pass.append(password)
+        login_pass.append(first_name)
 
-    return []
+    return login_pass
 
 
 def create_courier():
@@ -49,10 +52,6 @@ def delete_courier_by_id(courier_id):
     return requests.delete(f'{CREATE_COURIER}/{courier_id}')
 
 
-def delete_courier(login, password):
-    return delete_courier_by_id(get_courier_id(login, password))
-
-
 def create_order():
     response = requests.post(ORDERS, json=ORDER_DATA.copy())
     if response.status_code != 201:
@@ -60,8 +59,12 @@ def create_order():
     return response.json()["track"]
 
 
+def cancel_order(track):
+    return requests.put(CANCEL_ORDER, params={"track": track})
+
+
 def get_order_by_track(track):
-    return requests.get(f'{ORDERS}/track', params={"t": track})
+    return requests.get(TRACK_ORDER, params={"t": track})
 
 
 def get_order_id(track):
