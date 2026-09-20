@@ -16,14 +16,14 @@ class TestDeleteCourier:
 
     @allure.title("Без id курьера запрос возвращает ошибку")
     def test_delete_courier_without_id_error(self):
-        response = requests.delete(f'{CREATE_COURIER}/')
+        response = requests.delete(CREATE_COURIER)
 
         assert response.status_code == 400
-        assert "message" in response.json()
+        assert response.json()["message"] == "Недостаточно данных для удаления курьера"
 
     @allure.title("Несуществующего курьера удалить нельзя")
     def test_delete_nonexistent_courier_error(self):
-        response = requests.delete(f'{CREATE_COURIER}/999999999999')
+        response = requests.delete(f'{CREATE_COURIER}/99999999')
 
         assert response.status_code == 404
-        assert "message" in response.json()
+        assert response.json()["message"] == "Курьера с таким id нет"
