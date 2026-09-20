@@ -8,10 +8,10 @@ from urls import ACCEPT_ORDER
 class TestAcceptOrder:
 
     @allure.title("Курьер может принять заказ")
-    def test_accept_order_success(self, courier_with_id, order):
+    def test_accept_order_success(self, courier, order):
         response = requests.put(
             f'{ACCEPT_ORDER}/{order["id"]}',
-            params={"courierId": courier_with_id["id"]}
+            params={"courierId": courier["id"]}
         )
 
         assert response.status_code == 200
@@ -35,20 +35,20 @@ class TestAcceptOrder:
         assert "message" in response.json()
 
     @allure.title("Без id заказа запрос возвращает ошибку")
-    def test_accept_order_without_order_id_error(self, courier_with_id):
+    def test_accept_order_without_order_id_error(self, courier):
         response = requests.put(
             f'{ACCEPT_ORDER}/',
-            params={"courierId": courier_with_id["id"]}
+            params={"courierId": courier["id"]}
         )
 
         assert response.status_code == 400
         assert "message" in response.json()
 
     @allure.title("С неверным id заказа запрос возвращает ошибку")
-    def test_accept_order_with_wrong_order_id_error(self, courier_with_id):
+    def test_accept_order_with_wrong_order_id_error(self, courier):
         response = requests.put(
             f'{ACCEPT_ORDER}/999999999999',
-            params={"courierId": courier_with_id["id"]}
+            params={"courierId": courier["id"]}
         )
 
         assert response.status_code == 404
