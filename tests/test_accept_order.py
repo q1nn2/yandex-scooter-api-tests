@@ -7,9 +7,9 @@ from api_methods import OrderMethods
 class TestAcceptOrder:
 
     @allure.title("Курьер может принять заказ")
-    def test_accept_order_success(self, courier, order_to_accept):
+    def test_accept_order_success(self, courier, accepted_order):
         response = OrderMethods.accept_order(
-            order_to_accept["id"],
+            accepted_order["id"],
             courier["id"]
         )
 
