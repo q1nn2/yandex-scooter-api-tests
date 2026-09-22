@@ -3,9 +3,12 @@ name: API-тесты
 on:
   push:
     branches:
-      - api-tests
+      - main
     paths-ignore:
       - 'allure_results/**'
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -31,6 +34,7 @@ jobs:
           echo "exit_code=$?" >> "$GITHUB_OUTPUT"
           exit 0
       - name: Сохранить результаты Allure в репозитории
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
