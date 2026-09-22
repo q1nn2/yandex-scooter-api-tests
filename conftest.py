@@ -55,7 +55,7 @@ def order():
 
 
 @pytest.fixture
-def order_to_accept():
+def accepted_order(courier):
     response = OrderMethods.create_order(ORDER_DATA.copy())
     track = response.json()["track"]
     order_response = OrderMethods.get_order_by_track(track)
@@ -67,4 +67,3 @@ def order_to_accept():
     }
 
     OrderMethods.finish_order(order_id)
-    OrderMethods.cancel_order(track)
