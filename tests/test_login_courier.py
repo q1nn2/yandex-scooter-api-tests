@@ -1,9 +1,8 @@
 import allure
 import pytest
-import requests
 
+from api_methods import CourierMethods
 from helpers import generate_random_string
-from urls import LOGIN_COURIER
 
 
 @allure.feature("Логин курьера")
@@ -11,7 +10,7 @@ class TestLoginCourier:
 
     @allure.title("Курьер может авторизоваться")
     def test_login_courier_success(self, courier):
-        response = requests.post(LOGIN_COURIER, data={
+        response = CourierMethods.login_courier({
             "login": courier["login"],
             "password": courier["password"]
         })
@@ -29,7 +28,7 @@ class TestLoginCourier:
         }
         payload.pop(missing_field)
 
-        response = requests.post(LOGIN_COURIER, data=payload)
+        response = CourierMethods.login_courier(payload)
 
         assert response.status_code == 400
         assert response.json()["message"] == "Недостаточно данных для входа"
@@ -43,14 +42,14 @@ class TestLoginCourier:
         }
         payload[wrong_field] = generate_random_string(20)
 
-        response = requests.post(LOGIN_COURIER, data=payload)
+        response = CourierMethods.login_courier(payload)
 
         assert response.status_code == 404
         assert response.json()["message"] == "Учетная запись не найдена"
 
     @allure.title("Несуществующий курьер не может авторизоваться")
     def test_login_nonexistent_courier_error(self):
-        response = requests.post(LOGIN_COURIER, data={
+        response = CourierMethods.login_courier({
             "login": generate_random_string(20),
             "password": generate_random_string(20)
         })

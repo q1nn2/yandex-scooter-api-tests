@@ -1,37 +1,70 @@
 import pytest
 
-from helpers import (
-    create_courier,
-    delete_courier_by_id,
-    get_courier_id,
-    create_order,
-    get_order_id,
-    cancel_order
-)
+from api_methods import CourierMethods, OrderMethods
+from data import ORDER_DATA
+from helpers import generate_courier_data
 
 
 @pytest.fixture
 def courier():
-    login, password, first_name = create_courier()
-    courier_id = get_courier_id(login, password)
+    payload = generate_courier_data()
+    CourierMethods.create_courier(payload)
+    login_response = CourierMethods.login_courier({
+        "login": payload["login"],
+        "password": payload["password"]
+    })
+    courier_id = login_response.json()["id"]
 
     yield {
-        "login": login,
-        "password": password,
-        "firstName": first_name,
+        "login": payload["login"],
+        "password": payload["password"],
+        "firstName": payload["firstName"],
         "id": courier_id
     }
 
-    delete_courier_by_id(courier_id)
+    CourierMethods.delete_courier(courier_id)
+
+
+@pytest.fixture
+def courier_data():
+    payload = generate_courier_data()
+
+    yield payload
+
+    login_response = CourierMethods.login_courier({
+        "login": payload["login"],
+        "password": payload["password"]
+    })
+    courier_id = login_response.json().get("id")
+    CourierMethods.delete_courier(courier_id)
 
 
 @pytest.fixture
 def order():
-    track = create_order()
+    response = OrderMethods.create_order(ORDER_DATA.copy())
+    track = response.json()["track"]
+    order_response = OrderMethods.get_order_by_track(track)
+    order_id = order_response.json()["order"]["id"]
 
     yield {
         "track": track,
-        "id": get_order_id(track)
+        "id": order_id
     }
 
-    cancel_order(track)
+    OrderMethods.cancel_order(track)
+
+
+@pytest.fixture
+def order_to_accept():
+    response = OrderMethods.create_order(ORDER_DATA.copy())
+    track = response.json()["track"]
+    order_response = OrderMethods.get_order_by_track(track)
+    order_id = order_response.json()["order"]["id"]
+
+    yield {
+        "track": track,
+        "id": order_id
+    }
+
+    OrderMethods.finish_order(order_id)
+    OrderMethods.cancel_order(track)

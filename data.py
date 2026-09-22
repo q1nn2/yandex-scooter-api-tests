@@ -10,8 +10,8 @@ ORDER_DATA = {
 }
 
 ORDER_COLORS = [
-    ["BLACK"],
-    ["GREY"],
-    ["BLACK", "GREY"],
-    []
+    {"color": ["BLACK"]},
+    {"color": ["GREY"]},
+    {"color": ["BLACK", "GREY"]},
+    {}
 ]
